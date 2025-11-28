@@ -38,7 +38,7 @@ const userRouter = require("./routes/user.js");
 
 
 
-const dbUrl =  process.env.ATLASDB_URL;
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderLustLocalDB";
 
 
 
@@ -71,7 +71,7 @@ app.use(express.static(path.join(__dirname , "/public")));
 const store =  MongoStore.create({ 
     mongoUrl: dbUrl,
     crypto: {
-    secret: process.env.SECRET,
+    secret: process.env.SECRET || "my-default-store-secret",
   },
   touchAfter: 24 * 3600,
 
@@ -86,7 +86,7 @@ store.on("error", (err)=>{
 //creating sessions
 const sessionOptions = {
     store ,
-    secret : process.env.SECRET,
+    secret : process.env.SECRET || "my-default-session-secret",
     resave : false,
     saveUninitialized : true,
     cookie:{
@@ -121,9 +121,10 @@ passport.deserializeUser(User.deserializeUser());
 
 
 app.use((req , res , next)=>{
+     
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currUser = req.user;
+   res.locals.currUser = req.user;
     next();
 });
 
